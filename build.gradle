@@ -7,14 +7,16 @@ buildscript {
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath('se.transmode.gradle:gradle-docker:1.2')
 	}
 }
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'docker'
 
-version = '0.0.1-SNAPSHOT'
+version = ''
 sourceCompatibility = 1.8
 
 repositories {
@@ -23,6 +25,15 @@ repositories {
 
 bootRun {
     addResources = true
+}
+
+jar {
+    baseName = 'linkerd-demo'
+}
+
+task buildDocker(type: Docker, dependsOn: build) {
+
+
 }
 
 dependencies {
