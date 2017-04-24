@@ -16,7 +16,7 @@ apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'docker'
 
-version = ''
+version = '1.0'
 sourceCompatibility = 1.8
 
 repositories {
@@ -32,8 +32,6 @@ jar {
 }
 
 task buildDocker(type: Docker, dependsOn: build) {
-
-
 }
 
 dependencies {
