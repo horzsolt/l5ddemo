@@ -1,9 +1,9 @@
 package example.l5d.helloservice.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
-@Component
+@Configuration
 public class ApplicationConfiguration {
 
 	@Value("${service.name}")

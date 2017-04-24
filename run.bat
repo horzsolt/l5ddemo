@@ -1,0 +1,1 @@
+docker run --env-file ./env.list -t -p 8080:8080 l5ddemo
