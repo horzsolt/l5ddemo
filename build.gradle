@@ -37,11 +37,19 @@ jar {
 
 docker {
 	//url = 'http://10.29.161.109:31441/v2'
+    javaApplication {
+        baseImage = 'frolvlad/alpine-oraclejdk8:slim'
+        maintainer = 'horzsolt "horzsolt2006@gmail.com"'
+        ports = [8080,8080]
+        tag = 'horzsolt/l5ddemo'
+    }
+
 }
 
 task buildImage(type: DockerBuildImage, dependsOn: build) {
     tag = 'horzsolt/l5ddemo'
-	inputDir = file('d:\\work\\l5ddemo')
+	inputDir = projectDir
+	dockerFile = project.file('Dockerfile')	
 }
 
 dependencies {
