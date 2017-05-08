@@ -1,5 +1,7 @@
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import com.bmuschko.gradle.docker.tasks.image.Dockerfile
+import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
+import com.bmuschko.gradle.docker.DockerRegistryCredentials
 
 buildscript {
     ext {
@@ -57,8 +59,19 @@ task createDockerfile(type: Dockerfile,  dependsOn: [build, 'prepareArchiveForDo
 }
 
 task buildImage(type: DockerBuildImage, dependsOn: 'createDockerfile') {
-    tag = 'horzsolt/l5ddemo'
+    tag = 'hub.docker.com/horzsolt/l5ddemo'
     inputDir = createDockerfile.destFile.parentFile
+}
+
+
+task pushImage(type: DockerPushImage, dependsOn: 'buildImage') {
+	imageName = 'hub.docker.com/horzsolt/l5ddemo'
+    /*registryCredentials = new DockerRegistryCredentials(
+        url = 'https://hub.docker.com/r/horzsolt/l5ddemo/'
+		username = "horzsolt"
+		password = "l5ddemo"
+		email = "horzsolt2006@gmail.com"
+    )*/
 }
 
 dependencies {
