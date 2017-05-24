@@ -14,12 +14,8 @@ Artifacts:
 This setup is specifically for windows machines and Hyper-V.
 On development machines the easiest way to use minikube which will create a one node cluster locally.
 
-1. Install
 You can download the latest version from here:
 https://github.com/kubernetes/minikube/releases
-
-Easiest way to use chocolatey:
-https://chocolatey.org/packages/Minikube
 
 You'll also need kubectl for interacting with you cluster, from cmd.
 You can always download from under the changelog of Kubernetes, downloading the Client library from the latest GA release:
