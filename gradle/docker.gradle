@@ -1,0 +1,50 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.bmuschko:gradle-docker-plugin:3.0.11'
+    }
+}
+
+// use fully qualified class name
+apply plugin: DockerRemoteApiPlugin
+
+// import task classes
+import com.bmuschko.gradle.docker.DockerRemoteApiPlugin
+import com.bmuschko.gradle.docker.tasks.image.*
+
+// use task classes
+docker {
+//    url = project.properties.getOrDefault('dockerUrl', System.env.DOCKER_HOST)
+//    certPath = new File(project.properties.getOrDefault('certPath', System.env.DOCKER_CERT_PATH) as String)
+
+    registryCredentials {
+        url = 'http://10.0.0.11'
+    }
+}
+
+task prepareArchiveForDockerBuild(type: Copy) {
+    from "${project.jar.archivePath}"
+    into "$dockerPath"
+}
+
+task createDockerfile(type: Dockerfile,  dependsOn: [build, 'prepareArchiveForDockerBuild']) {
+    destFile = project.file("$dockerPath/Dockerfile")
+
+    from 'frolvlad/alpine-oraclejdk8:slim'
+    volume '/tmp'
+    addFile "${project.jar.archiveName}", 'app.jar'
+    runCommand "sh -c 'touch /app.jar'"
+//    environmentVariable 'JAVA_OPTS', " "
+    entryPoint  "sh", "-c", 'java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app.jar'
+}
+
+task buildImage(type: DockerBuildImage, dependsOn: 'createDockerfile') {
+    tag = '10.0.0.11/horzsolt/l5ddemo'
+    inputDir = createDockerfile.destFile.parentFile
+}
+
+task pushImage(type: DockerPushImage, dependsOn: 'buildImage') {
+    imageName = '10.0.0.11/horzsolt/l5ddemo'
+}

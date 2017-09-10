@@ -1,23 +1,43 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: serviceA
+  name: service-a
   namespace: l5ddemo
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
-        app: serviceA
+        app: service-a
     spec:
       containers:
       - name: l5ddemo-service
-        image: horzsolt/l5ddemo
+        image: 10.0.0.11/horzsolt/l5ddemo
         env:
         - name: "SERVICE_NAME"
-          value: "Service-A"
-        - name: "RESPONSE_DELAY"
-          value: "30"
+          value: "Service-a"
+        - name: "RESPONSE_LATENCY"
+          value: "500"
+        - name: "POD_IP"
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: "NODE_NAME"
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: "HOST_IP"
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: "HTTP_PROXY_IP"
+          value: $(NODE_NAME):4140
+        - name: "HTTP_PROXY_PORT"
+          value: $(NODE_NAME):4140
+        - name: "TARGET"
+          value: "service-b.l5ddemo"
         ports:
           - name: web
             containerPort: 8080
@@ -35,10 +55,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: serviceA
+  name: service-a
   namespace: l5ddemo
   labels:
-    app: serviceA
+    app: service-a
 spec:
   type: NodePort
   ports:
@@ -46,4 +66,4 @@ spec:
       port: 8080
       targetPort: web
   selector:
-    app: serviceA
+    app: service-a
