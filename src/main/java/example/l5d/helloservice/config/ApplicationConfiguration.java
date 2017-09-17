@@ -21,7 +21,7 @@ public class ApplicationConfiguration {
 	@Value("${node_name:}")
 	public String nodeName;
 
-	@Value("${http.proxy.host:localhost}")
+	@Value("${http.proxy.ip:localhost}")
 	public String httpProxyHost;
 
 	@Value("${http.proxy.port:80}")

@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.bmuschko:gradle-docker-plugin:3.0.11'
+        classpath 'com.bmuschko:gradle-docker-plugin:3.0.6'
     }
 }
 
@@ -14,13 +14,18 @@ apply plugin: DockerRemoteApiPlugin
 import com.bmuschko.gradle.docker.DockerRemoteApiPlugin
 import com.bmuschko.gradle.docker.tasks.image.*
 
+ext {
+    dockerPath = "${project.buildDir}/docker"
+    dockerRegistryUrl = project.properties.getOrDefault('registryUrl', System.env.DOCKER_REGISTRY_URL)
+}
+
 // use task classes
 docker {
-//    url = project.properties.getOrDefault('dockerUrl', System.env.DOCKER_HOST)
-//    certPath = new File(project.properties.getOrDefault('certPath', System.env.DOCKER_CERT_PATH) as String)
+    url = project.properties.getOrDefault('dockerUrl', System.env.DOCKER_HOST)
+    certPath = new File(project.properties.getOrDefault('certPath', System.env.DOCKER_CERT_PATH) as String)
 
     registryCredentials {
-        url = 'http://10.0.0.11'
+        url = "http://$dockerRegistryUrl"
     }
 }
 
@@ -41,10 +46,10 @@ task createDockerfile(type: Dockerfile,  dependsOn: [build, 'prepareArchiveForDo
 }
 
 task buildImage(type: DockerBuildImage, dependsOn: 'createDockerfile') {
-    tag = '10.0.0.11/horzsolt/l5ddemo'
+    tag = "$dockerRegistryUrl/horzsolt/l5ddemo"
     inputDir = createDockerfile.destFile.parentFile
 }
 
 task pushImage(type: DockerPushImage, dependsOn: 'buildImage') {
-    imageName = '10.0.0.11/horzsolt/l5ddemo'
+    imageName = "$dockerRegistryUrl/horzsolt/l5ddemo"
 }

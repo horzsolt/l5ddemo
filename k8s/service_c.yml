@@ -1,7 +1,7 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: service-b
+  name: service-c
 #  namespace: l5ddemo
 spec:
   replicas: 1
@@ -10,14 +10,14 @@ spec:
   template:
     metadata:
       labels:
-        app: service-b
+        app: service-c
     spec:
       containers:
       - name: l5ddemo-service
         image: 10.0.0.252/horzsolt/l5ddemo
         env:
         - name: "SERVICE_NAME"
-          value: "Service-b"
+          value: "service-c"
         - name: "RESPONSE_LATENCY"
           value: "0"
         - name: "POD_IP"
@@ -28,14 +28,6 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName
-        - name: "HTTP_PROXY_IP"
-#          value: $(NODE_NAME)
-          value: "192.168.99.100"
-        - name: "HTTP_PROXY_PORT"
-#          value: "4140"
-          value: "31012"
-        - name: "TARGET"
-          value: "service-c.default"
         ports:
           - name: web
             containerPort: 8080
@@ -53,10 +45,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: service-b
+  name: service-c
 #  namespace: l5ddemo
   labels:
-    app: service-b
+    app: service-c
 spec:
   type: NodePort
   ports:
@@ -64,4 +56,4 @@ spec:
       port: 80
       targetPort: web
   selector:
-    app: service-b
+    app: service-c

@@ -52,9 +52,13 @@ public class HelloController {
 
             responseBuilder.httpProxy(appConfig.httpProxyHost + ":" + appConfig.httpProxyPort);
 
-            RestTemplate restTemplate = new RestTemplate(requestFactory);
-            DefaultResponse response = restTemplate.getForObject(targetUrl, DefaultResponse.class);
-            responseBuilder.downstreamResponse(response);
+            try {
+                RestTemplate restTemplate = new RestTemplate(requestFactory);
+                DefaultResponse response = restTemplate.getForObject(targetUrl, DefaultResponse.class);
+                responseBuilder.downstreamResponse(response);
+            } catch (Exception e) {
+                logger.error("Error happened during calling the downstream service", e);
+            }
         }
 
         logger.debug("Returning response...");

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: linkerd-viz
-        image: buoyantio/linkerd-viz:latest
+        image: buoyantio/linkerd-viz:0.1.5
         args: ["k8s"]
         imagePullPolicy: Always
         env:
@@ -24,6 +24,8 @@ spec:
           value: "3000"
         - name: STATS_PORT
           value: "9191"
+        - name: SCRAPE_INTERVAL
+          value: "30s"
         ports:
         - name: grafana
           containerPort: 3000
@@ -44,7 +46,7 @@ metadata:
   labels:
     name: linkerd-viz
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
   - name: grafana
     port: 80
