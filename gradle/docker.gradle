@@ -17,12 +17,18 @@ import com.bmuschko.gradle.docker.tasks.image.*
 ext {
     dockerPath = "${project.buildDir}/docker"
     dockerRegistryUrl = project.properties.getOrDefault('registryUrl', System.env.DOCKER_REGISTRY_URL)
+    certPathString = project.properties.getOrDefault('certPath', System.env.DOCKER_CERT_PATH)
 }
+
+
 
 // use task classes
 docker {
     url = project.properties.getOrDefault('dockerUrl', System.env.DOCKER_HOST)
-    certPath = new File(project.properties.getOrDefault('certPath', System.env.DOCKER_CERT_PATH) as String)
+
+    if (project.certPathString) {
+        certPath = new File("$certPathString")
+    }
 
     registryCredentials {
         url = "http://$dockerRegistryUrl"

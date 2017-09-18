@@ -21,8 +21,6 @@ You'll also need kubectl for interacting with you cluster, from cmd.
 You can always download from under the changelog of Kubernetes, downloading the Client library from the latest GA release:
 https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG.md
 
-https://chocolatey.org/packages/kubernetes-cli
-
 Download docker for windows, we'll use hyper-v containers instead of the legacy toolbox:
 https://download.docker.com/win/stable/InstallDocker.msi
 
@@ -38,7 +36,7 @@ minikube start --vm-driver="hyperv" --memory=1024 --hyperv-virtual-switch="MyVir
 
 ## Alternative way of installation (has not been tested yet)
 1. Download Chocolatey (https://chocolatey.org/install)
-2. Install docker for windows
+2. Install docker client for windows
 ```
 choco install docker
 ```
@@ -47,8 +45,38 @@ choco install docker
 choco install minikube
 ```
 4. Start a new cluster with minikube
+```
+minikube start
+```
 
+## Working with local private registry
+1. Enabling registry addon in minikube
+```
+minikube addons enable registry
+```
+2. Using docker server from the minikube
+```
+& minikube docker-env | Invoke-Expression
+```
+3. Determine the IP of the private registry inside the cluster
+```
+kubectl -n kube-system get svc registry -o jsonpath="{.spec.clusterIP}"
+10.0.0.240
+```
+4. build and push to insecure registry
+```
+docker build -t 10.0.0.240/busybox .
+docker push 10.0.0.240/busybox
+```
+5. Setting the private registry URL for the project
+```
+$Env:DOCKER_REGISTRY_URL = $(kubectl -n kube-system get svc registry -o jsonpath='{.spec.clusterIP}')
+```
+6. Building
 ## Troubleshooting
 * If you are having issues with minikube, throwing errors like the ISO can't be find or having problems by resolving path under you user profile then you might try the following things:
   * Copy minikube.exe and kubectl.exe in the root of your C drive and at it on you path
   * Copy c:\Users\YOU_USER\.minikube to the root of C 
+* Virtualbox is unable to create Host-only network adapters:
+  * Reinstall Virtualbox with using NDIS5 drivers for networking
+    VirtualBox-5.x.xx-Win.exe -msiparams NETWORKTYPE=NDIS5

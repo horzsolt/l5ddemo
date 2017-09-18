@@ -1,5 +1,10 @@
 package example.l5d.helloservice.controller;
 
+import static org.springframework.util.StringUtils.hasText;
+
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+
 import example.l5d.helloservice.config.ApplicationConfiguration;
 import example.l5d.helloservice.response.DefaultResponse;
 import org.slf4j.Logger;
@@ -11,11 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-
-import static org.springframework.util.StringUtils.hasText;
-
 @RestController
 public class HelloController {
 
@@ -23,6 +23,9 @@ public class HelloController {
 
     @Autowired
     protected ApplicationConfiguration appConfig;
+
+    @Autowired
+    protected RestTemplate restTemplate;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public DefaultResponse index() {
@@ -45,17 +48,12 @@ public class HelloController {
         if (hasText(appConfig.target)) {
             String targetUrl = "http://" + appConfig.target;
 
-            SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-
-            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(appConfig.httpProxyHost, appConfig.httpProxyPort));
-            requestFactory.setProxy(proxy);
-
-            responseBuilder.httpProxy(appConfig.httpProxyHost + ":" + appConfig.httpProxyPort);
-
             try {
-                RestTemplate restTemplate = new RestTemplate(requestFactory);
                 DefaultResponse response = restTemplate.getForObject(targetUrl, DefaultResponse.class);
-                responseBuilder.downstreamResponse(response);
+
+                responseBuilder
+                        .httpProxy(appConfig.httpProxy)
+                        .downstreamResponse(response);
             } catch (Exception e) {
                 logger.error("Error happened during calling the downstream service", e);
             }
