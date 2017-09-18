@@ -9,9 +9,11 @@ import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,13 +44,16 @@ public class ApplicationConfiguration {
     @Value("${http.proxy:}")
     public String httpProxy;
 
+    @Autowired
+    private RestTemplateBuilder restTemplateBuilder;
+
     @Bean
-//    @ConditionalOnProperty(name = "http.proxy")
+    @ConditionalOnProperty(name = "http.proxy")
     public RestTemplateCustomizer proxyCustomizer() {
         return new RestTemplateCustomizer() {
             @Override
             public void customize(RestTemplate restTemplate) {
-                HttpHost proxy = new HttpHost(httpProxy);
+                HttpHost proxy = HttpHost.create(httpProxy);
 
                 logger.debug("Customizing RestTemplate with proxy of: " + proxy.toHostString());
 
@@ -73,6 +78,6 @@ public class ApplicationConfiguration {
 
     @Bean
     public RestTemplate restTemplate(){
-        return new RestTemplate();
+        return restTemplateBuilder.build();
     }
 }

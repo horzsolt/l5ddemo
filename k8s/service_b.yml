@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: l5ddemo-service
-        image: 10.0.0.28/horzsolt/l5ddemo
+        image: 10.0.0.252/horzsolt/l5ddemo
         env:
         - name: "SERVICE_NAME"
           value: "Service-b"
@@ -28,11 +28,10 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName
-#        - name: "HTTP_PROXY"
-##          value: $(NODE_NAME):4140
-#          value: "192.168.99.100:30111"
-#        - name: "TARGET"
-#          value: "service-c.default"
+        - name: "HTTP_PROXY"
+          value: $(NODE_NAME):4140
+        - name: "TARGET"
+          value: "service-c.default"
         ports:
           - name: web
             containerPort: 8080
